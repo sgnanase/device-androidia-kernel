@@ -143,7 +143,7 @@ static inline uint_fixed_16_16_t u32_to_fixed_16_16(uint32_t val)
 {
 	uint_fixed_16_16_t fp;
 
-	WARN_ON(val >> 16);
+	WARN_ON(val > U16_MAX);
 
 	fp.val = val << 16;
 	return fp;
@@ -191,8 +191,9 @@ static inline uint32_t mul_u32_fixed_16_16_round_up(uint32_t val,
 
        intermediate_val = (uint64_t) val * mul.val;
        intermediate_val = DIV_ROUND_UP_ULL(intermediate_val, 1 << 16);
-       WARN_ON(intermediate_val >> 32);
-       result = clamp_t(uint32_t, intermediate_val, 0, ~0);
+       WARN_ON(intermediate_val > U32_MAX);
+       result = (uint32_t) intermediate_val;
+
        return result;
 }
 
@@ -204,8 +205,8 @@ static inline uint_fixed_16_16_t mul_fixed_16_16(uint_fixed_16_16_t val,
 
 	intermediate_val = (uint64_t) val.val * mul.val;
 	intermediate_val = intermediate_val >> 16;
-	WARN_ON(intermediate_val >> 32);
-	fp.val = clamp_t(uint32_t, intermediate_val, 0, ~0);
+        WARN_ON(intermediate_val > U32_MAX);
+        fp.val = (uint32_t) intermediate_val;
 	return fp;
 }
 
@@ -225,8 +226,8 @@ static inline uint_fixed_16_16_t fixed_16_16_div_u64(uint32_t val, uint32_t d)
 
 	interm_val = (uint64_t)val << 16;
 	interm_val = DIV_ROUND_UP_ULL(interm_val, d);
-	WARN_ON(interm_val >> 32);
-	res.val = (uint32_t) interm_val;
+        WARN_ON(interm_val > U32_MAX);
+        res.val = (uint32_t) interm_val;
 
 	return res;
 }
@@ -238,8 +239,8 @@ static inline uint32_t fixed_16_16_div_round_up_u64(uint32_t val,
 
 	interm_val = (uint64_t)val << 16;
 	interm_val = DIV_ROUND_UP_ULL(interm_val, d.val);
-	WARN_ON(interm_val >> 32);
-	return clamp_t(uint32_t, interm_val, 0, ~0);
+	WARN_ON(interm_val > U32_MAX);
+	return (uint32_t) interm_val;
 }
 
 static inline uint_fixed_16_16_t mul_u32_fixed_16_16(uint32_t val,
@@ -249,7 +250,7 @@ static inline uint_fixed_16_16_t mul_u32_fixed_16_16(uint32_t val,
 	uint_fixed_16_16_t fp;
 
 	intermediate_val = (uint64_t) val * mul.val;
-	WARN_ON(intermediate_val >> 32);
+        WARN_ON(intermediate_val > U32_MAX);
 	fp.val = (uint32_t) intermediate_val;
 	return fp;
 }
