@@ -1277,7 +1277,7 @@ int i915_driver_load(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	intel_runtime_pm_enable(dev_priv);
 
-	dev_priv->ipc_enabled = false;
+	intel_init_ipc(dev_priv);
 
 	/* Everything is in place, we can now relax! */
 	DRM_INFO("Initialized %s %d.%d.%d %s for %s on minor %d\n",
@@ -2492,6 +2492,8 @@ static int intel_runtime_resume(struct device *kdev)
 	 */
 	if (!IS_VALLEYVIEW(dev_priv) && !IS_CHERRYVIEW(dev_priv))
 		intel_hpd_init(dev_priv);
+
+	intel_enable_ipc(dev_priv);
 
 	enable_rpm_wakeref_asserts(dev_priv);
 
